@@ -34,7 +34,7 @@ int main() {
   printf("Correct after %d trials!\n", efforts);
 }
 
-int random_(int m, int n) { return (rand() % m) + (rand() % (n - m)) + m + 1; }
+int random_(int m, int n) { return (rand() % (n - m)) + m + 1; }
 
 int uniq_random(int m, int n) {
   int r;
