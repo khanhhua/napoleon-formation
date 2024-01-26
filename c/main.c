@@ -2,9 +2,13 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "set.h"
+
 int legion_size = 0;
+Set *uniq_given = NULL;
 
 int random_(int, int);
+int uniq_random(int, int);
 
 int main() {
   srand(time(NULL));
@@ -17,7 +21,7 @@ int main() {
   do {
     efforts++;
 
-    row_count = random_(1, 10);
+    row_count = uniq_random(1, 10);
     col_count = legion_size / row_count;
     remainder = legion_size % row_count;
 
@@ -27,7 +31,27 @@ int main() {
 
   } while (legion_size != answer);
 
-  printf("Correct!");
+  printf("Correct after %d trials!\n", efforts);
 }
 
 int random_(int m, int n) { return (rand() % m) + (rand() % (n - m)) + m + 1; }
+
+int uniq_random(int m, int n) {
+  int r;
+
+  if (uniq_given == NULL) {
+    r = random_(m, n);
+
+    uniq_given = set_init((Set *)calloc(1, sizeof(Set)), r);
+
+    return r;
+  }
+
+  do {
+    r = random_(m, n);
+  } while (set_in(uniq_given, r));
+
+  set_add(uniq_given, r);
+
+  return r;
+}

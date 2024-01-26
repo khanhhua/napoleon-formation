@@ -4,7 +4,7 @@
 # $^  : all prerequisites
 
 SRC_FILES = main.c
-OBJ_FILES = main.o
+OBJ_FILES = main.o set.o
 
 .PHONY: build 
 
@@ -15,8 +15,11 @@ all: $(OBJ_FILES)
 	  @echo "Linking object files..."
 		gcc build/*.o -o build/napoleon
 
-prod: clean all 
+build: clean all 
 
 clean:
 		mkdir -p build
 		rm -Rf build/*
+
+run: build
+		./build/napoleon
