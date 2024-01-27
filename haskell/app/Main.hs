@@ -1,5 +1,6 @@
 module Main where
 
+import Control.Monad.State.Lazy
 import Data.List (nub)
 
 type Rows = Int
@@ -10,30 +11,36 @@ type Contraint = (Rows, Remainder)
 
 type Solution = [Int] -> Contraint -> [Int]
 
+type SolutionT = StateT [Int] IO Int
+
 main :: IO ()
 main = do
   putStrLn "Bonjour, Napoleon!"
   givenAnswer <- read <$> getLine :: IO Int
 
-  [answer] <- process []
+  answer <- evalStateT process []
   putStrLn $ "Answer: " <> show answer
 
   if givenAnswer == answer
     then putStrLn "Correct!"
     else putStrLn "Sorry, wrong answer."
 
-process :: [Int] -> IO [Int]
-process proposals = do
-  elements <- (fmap read . words <$> getLine) :: IO [Int]
+process :: SolutionT
+process = do
+  line <- lift getLine
+  proposals <- get
 
   let
+    elements = (read <$> words line) :: [Int]
     rows : remainder : _ = elements
     constraint = (rows, remainder)
     newProposals = solve proposals constraint
 
-  if length newProposals == 1
-    then return newProposals
-    else process newProposals
+  case newProposals of
+    [answer] -> return answer
+    _ -> do
+      put newProposals
+      process
 
 solve :: Solution
 solve proposals (rows, remainder) =
